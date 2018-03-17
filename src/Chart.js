@@ -31,6 +31,7 @@
 
 
 // I created this function only using intuition, dispatch and model are needed? needs to be rethink
+//probably should be moved to View file where all other HTML elements are generated. but can it be then done with ChartJS framework?
 export function showchart(dispatch, model) {
   var ctx = document.getElementById("myChart").getContext('2d');
   var myChart = new Chart(ctx, {

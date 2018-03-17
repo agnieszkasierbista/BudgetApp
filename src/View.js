@@ -134,6 +134,9 @@ function tableView(dispatch, expenses) {
   ]);
 }
 
+//i think I shoul add here function chartView
+
+
 function view(dispatch, model) {
   return div({ className: 'mw6 center' }, [
     h1({ className: 'f2 pv2 bb' }, 'Simple Family Budget'),
