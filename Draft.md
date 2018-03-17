@@ -1,20 +1,22 @@
-# Calorie Counting App Plan / Notes
+# Budget App Plan / Notes
 
 ## Data Model
 
 Example Model/Shape: 
 
 ```javascript
-meal = {
+expense = {
   id: 1,
-  description: 'Breakfast', 
-  calories: 460
+  date: '17.03.2018',
+  description: 'Food', 
+  price: 250,
 }
 model = {
-  meals: [],
+  expenses: [],
   showForm: false,
-  description: 'Dinner',
-  calories: 600,
+  date: '17.03.2018',
+  description: 'Water',
+  price: 25,
   editId: 3,
   nextId: 1,
 }
@@ -28,16 +30,17 @@ view
     buttonSet
   tableView
     tableHeader
-    mealsBody
-      mealRow
+    expensesBody
+      expensRow
         cell
-      totalRow 
+      totalRow
+  expensesChart 
 
 ## Update Functions
 
-click add meal
-meal input
-calories input
+click add expens
+expens input
+price input
 click save (add/update)
 click edit
 click delete
