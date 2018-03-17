@@ -2,11 +2,11 @@ import * as R from 'ramda';
 
 const MSGS = {
   SHOW_FORM: 'SHOW_FORM',
-  MEAL_INPUT: 'MEAL_INPUT',
-  CALORIES_INPUT: 'CALORIES_INPUT',
-  SAVE_MEAL: 'SAVE_MEAL',
-  DELETE_MEAL: 'DELETE_MEAL',
-  EDIT_MEAL: 'EDIT_MEAL',
+  EXPENSE_INPUT: 'EXPENSE_INPUT',
+  PRICE_INPUT: 'PRICE_INPUT',
+  SAVE_EXPENSE: 'SAVE_EXPENSE',
+  DELETE_EXPENSE: 'DELETE_EXPENSE',
+  EDIT_EXPENSE: 'EDIT_EXPENSE',
 };
 
 export function showFormMsg(showForm) {
@@ -16,32 +16,32 @@ export function showFormMsg(showForm) {
   };
 }
 
-export function mealInputMsg(description) {
+export function expenseInputMsg(description) {
   return {
-    type: MSGS.MEAL_INPUT,
+    type: MSGS.EXPENSE_INPUT,
     description,
   };
 }
 
-export function caloriesInputMsg(calories) {
+export function priceInputMsg(price) {
   return {
-    type: MSGS.CALORIES_INPUT,
-    calories,
+    type: MSGS.PRICE_INPUT,
+    price,
   };
 }
 
-export const saveMealMsg = { type: MSGS.SAVE_MEAL };
+export const saveExpenseMsg = { type: MSGS.SAVE_EXPENSE };
 
-export function deleteMealMsg(id) {
+export function deleteExpenseMsg(id) {
   return {
-    type: MSGS.DELETE_MEAL,
+    type: MSGS.DELETE_EXPENSE,
     id,
   };
 }
 
-export function editMealMsg(editId) {
+export function editExpenseMsg(editId) {
   return {
-    type: MSGS.EDIT_MEAL,
+    type: MSGS.EDIT_EXPENSE,
     editId,
   };
 }
@@ -50,44 +50,44 @@ function update(msg, model) {
   switch (msg.type) {
     case MSGS.SHOW_FORM: {
       const { showForm } = msg;
-      return { ...model, showForm, description: '', calories: 0 };
+      return { ...model, showForm, description: '', price: 0 };
     }
-    case MSGS.MEAL_INPUT: {
+    case MSGS.EXPENSE_INPUT: {
       const { description } = msg;
       return { ...model, description };
     }
-    case MSGS.CALORIES_INPUT: {
-      const calories = R.pipe(
+    case MSGS.PRICE_INPUT: {
+      const price = R.pipe(
         parseInt,
         R.defaultTo(0),
-      )(msg.calories);
-      return { ...model, calories };
+      )(msg.price);
+      return { ...model, price };
     }
-    case MSGS.SAVE_MEAL: {
+    case MSGS.SAVE_EXPENSE: {
       const { editId } = model;
       const updatedModel = editId !== null ?
         edit(msg, model) :
         add(msg, model);
       return updatedModel;
     }
-    case MSGS.DELETE_MEAL: {
+    case MSGS.DELETE_EXPENSE: {
       const { id } = msg;
-      const meals = R.filter(
-        meal => meal.id !== id,
-        model.meals);
-      return { ...model, meals };
+      const expenses = R.filter(
+        expense => expense.id !== id,
+        model.expenses);
+      return { ...model, expenses };
     }
-    case MSGS.EDIT_MEAL: {
+    case MSGS.EDIT_EXPENSE: {
       const { editId } = msg;
-      const meal = R.find(
-        meal => meal.id === editId,
-        model.meals);
-      const { description, calories } = meal;
+      const expense = R.find(
+        expense => expense.id === editId,
+        model.expenses);
+      const { description, price } = expense;
       return {
         ...model,
         editId,
         description,
-        calories,
+        price,
         showForm: true,
       };
     }
@@ -96,33 +96,33 @@ function update(msg, model) {
 }
 
 function add(msg, model) {
-  const { nextId, description, calories } = model;
-  const meal = { id: nextId, description, calories };
-  const meals = [...model.meals, meal]
+  const { nextId, description, price } = model;
+  const expense = { id: nextId, description, price };
+  const expenses = [...model.expenses, expense]
   return {
     ...model,
-    meals,
+    expenses,
     nextId: nextId + 1,
     description: '',
-    calories: 0,
+    price: 0,
     showForm: false,
   };
 }
 
 function edit(msg, model) {
-  const { description, calories, editId } = model;
-  const meals = R.map(
-    meal => {
-      if (meal.id === editId) {
-        return { ...meal, description, calories };
+  const { description, price, editId } = model;
+  const expenses = R.map(
+    expense => {
+      if (expense.id === editId) {
+        return { ...expense, description, price };
       }
-      return meal;
-    }, model.meals);
+      return expense;
+    }, model.expenses);
   return {
     ...model,
-    meals,
+    expenses,
     description: '',
-    calories: 0,
+    price: 0,
     showForm: false,
     editId: null,
   }

@@ -3,11 +3,11 @@ import { h } from 'virtual-dom';
 import * as R from 'ramda';
 import {
   showFormMsg,
-  mealInputMsg,
-  caloriesInputMsg,
-  saveMealMsg,
-  deleteMealMsg,
-  editMealMsg,
+  expenseInputMsg,
+  priceInputMsg,
+  saveExpenseMsg,
+  deleteExpenseMsg,
+  editExpenseMsg,
 } from './Update';
 
 const { pre, div, h1, button, form, label, input, td, th, tr, tbody, thead, table, i } = hh(h);
@@ -45,22 +45,22 @@ function buttonSet(dispatch) {
 }
 
 function formView(dispatch, model) {
-  const { description, calories, showForm } = model;
+  const { description, price, showForm } = model;
   if (showForm) {
     return form(
       {
         className: 'w-100 mv2',
         onsubmit: e => {
           e.preventDefault();
-          dispatch(saveMealMsg);
+          dispatch(saveExpenseMsg);
         },
       },
       [
-        fieldSet('Meal', description,
-          e => dispatch(mealInputMsg(e.target.value))
+        fieldSet('Expense', description,
+          e => dispatch(expenseInputMsg(e.target.value))
         ),
-        fieldSet('Calories', calories || '',
-          e => dispatch(caloriesInputMsg(e.target.value))
+        fieldSet('Price', price || '',
+          e => dispatch(priceInputMsg(e.target.value))
         ),
         buttonSet(dispatch),
       ],
@@ -71,7 +71,7 @@ function formView(dispatch, model) {
       className: 'f3 pv2 ph3 bg-blue white bn',
       onclick: () => dispatch(showFormMsg(true)),
     },
-    'Add Meal',
+    'Add Expense',
   );
 }
 
@@ -82,34 +82,34 @@ function cell(tag, className, value) {
 
 const tableHeader = thead([
   tr([
-    cell(th, 'pa2 tl', 'Meal'),
-    cell(th, 'pa2 tr', 'Calories'),
+    cell(th, 'pa2 tl', 'Expense'),
+    cell(th, 'pa2 tr', 'Price'),
     cell(th, '', ''),
   ]),
 ]);
 
-function mealRow(dispatch, className, meal) {
+function expenseRow(dispatch, className, expense) {
   return tr({ className }, [
-    cell(td, 'pa2', meal.description),
-    cell(td, 'pa2 tr', meal.calories),
+    cell(td, 'pa2', expense.description),
+    cell(td, 'pa2 tr', expense.price),
     cell(td, 'pa2 tr', [
       i({
         className: 'ph1 fa fa-trash-o pointer',
-        onclick: () => dispatch(deleteMealMsg(meal.id)),
+        onclick: () => dispatch(deleteExpenseMsg(expense.id)),
       }),
       i({
         className: 'ph1 fa fa-pencil-square-o pointer',
-        onclick: () => dispatch(editMealMsg(meal.id)),
+        onclick: () => dispatch(editExpenseMsg(expense.id)),
       }),
     ]),
   ]);
 }
 
-function totalRow(meals) {
+function totalRow(expenses) {
   const total = R.pipe(
-    R.map(meal => meal.calories),
+    R.map(expense => expense.price),
     R.sum,
-  )(meals);
+  )(expenses);
   return tr({ className: 'bt b' }, [
     cell(td, 'pa2 tl', 'Total:'),
     cell(td, 'pa2 tr', total),
@@ -117,28 +117,28 @@ function totalRow(meals) {
   ]);
 };
 
-function mealsBody(dispatch, className, meals) {
+function expensesBody(dispatch, className, expenses) {
   const rows = R.map(
-    R.partial(mealRow, [dispatch, 'stripe-dark']), meals);
-  const rowsWithTotal = [...rows, totalRow(meals)];
+    R.partial(expenseRow, [dispatch, 'stripe-dark']), expenses);
+  const rowsWithTotal = [...rows, totalRow(expenses)];
   return tbody({ className }, rowsWithTotal);
 }
 
-function tableView(dispatch, meals) {
-  if (meals.length === 0) {
-    return div({ className: 'mv2 i black-50' }, 'No meals to display...');
+function tableView(dispatch, expenses) {
+  if (expenses.length === 0) {
+    return div({ className: 'mv2 i black-50' }, 'No expenses to display...');
   }
   return table({ className: 'mv2 w-100 collapse' }, [
     tableHeader,
-    mealsBody(dispatch, '', meals),
+    expensesBody(dispatch, '', expenses),
   ]);
 }
 
 function view(dispatch, model) {
   return div({ className: 'mw6 center' }, [
-    h1({ className: 'f2 pv2 bb' }, 'Calorie Counter'),
+    h1({ className: 'f2 pv2 bb' }, 'Simple Family Budget'),
     formView(dispatch, model),
-    tableView(dispatch, model.meals),
+    tableView(dispatch, model.expenses),
   ]);
 }
 

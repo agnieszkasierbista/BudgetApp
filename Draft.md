@@ -31,15 +31,15 @@ view
   tableView
     tableHeader
     expensesBody
-      expensRow
+      expenseRow
         cell
       totalRow
   expensesChart 
 
 ## Update Functions
 
-click add expens
-expens input
+click add expense
+expense input
 price input
 click save (add/update)
 click edit
