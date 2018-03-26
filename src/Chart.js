@@ -1,43 +1,19 @@
-// //I don't know where to put it ;)
-// window.onload = function () {
-//   var chart = new CanvasJS.Chart("chartContainer",
-//     {
-//       title: {
-//         text: "Gaming Consoles Sold in 2012"
-//       },
-//       legend: {
-//         maxWidth: 350,
-//         itemWidth: 120
-//       },
-//       data: [
-//         {
-//           type: "pie",
-//           showInLegend: true,
-//           legendText: "{indexLabel}",
-//           dataPoints: [
-//             { y: 4181563, indexLabel: "PlayStation 3" },
-//             { y: 2175498, indexLabel: "Wii" },
-//             { y: 3125844, indexLabel: "Xbox 360" },
-//             { y: 1176121, indexLabel: "Nintendo DS" },
-//             { y: 1727161, indexLabel: "PSP" },
-//             { y: 4303364, indexLabel: "Nintendo 3DS" },
-//             { y: 1717786, indexLabel: "PS Vita" }
-//           ]
-//         }
-//       ]
-//     });
-//   chart.render();
-// }
-
-
+const {Chart} = require('chart.js');
+import * as R from 'ramda';
 // I created this function only using intuition, dispatch and model are needed? needs to be rethink
 //probably should be moved to View file where all other HTML elements are generated. but can it be then done with ChartJS framework?
-export function showchart(dispatch, model) {
-  var ctx = document.getElementById("myChart").getContext('2d');
-  var myChart = new Chart(ctx, {
+export default function generateChart(model) {
+  const canvas = document.createElement('canvas');
+  const ctx_ = canvas.getContext('2d');
+
+  const labels = R.map(expense => expense.description, model);
+
+  console.log(labels);
+
+  new Chart(ctx_, {
     type: 'pie',
     data: {
-      labels: ["M", "T", "W", "T", "F", "S", "S"], //here I'd like to add expenses.description
+      labels,
       datasets: [{
         backgroundColor: [
           "#2ecc71",
@@ -51,5 +27,9 @@ export function showchart(dispatch, model) {
         data: [12, 19, 3, 17, 28, 24, 7] // and here expenses.price
       }]
     }
+
   });
+
+  return canvas;
+
 }

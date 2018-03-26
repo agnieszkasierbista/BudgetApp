@@ -1,8 +1,10 @@
 import hh from 'hyperscript-helpers';
-import { h } from 'virtual-dom';
+import {h} from 'virtual-dom';
+import chartView from './Chart';
 import * as R from 'ramda';
 import {
   showFormMsg,
+  dateInputMsg,
   expenseInputMsg,
   priceInputMsg,
   saveExpenseMsg,
@@ -10,11 +12,11 @@ import {
   editExpenseMsg,
 } from './Update';
 
-const { pre, div, h1, button, form, label, input, td, th, tr, tbody, thead, table, i } = hh(h);
+const {div, h1, button, form, label, input, td, th, tr, tbody, thead, table, i, canvas} = hh(h);
 
 function fieldSet(labelText, inputValue, oninput) {
   return div([
-    label({ className: 'db mb1' }, labelText),
+    label({className: 'db mb1'}, labelText),
     input({
       className: 'pa2 input-reset ba w-100 mb2',
       type: 'text',
@@ -45,7 +47,7 @@ function buttonSet(dispatch) {
 }
 
 function formView(dispatch, model) {
-  const { description, price, showForm } = model;
+  const {date, description, price, showForm} = model;
   if (showForm) {
     return form(
       {
@@ -56,6 +58,9 @@ function formView(dispatch, model) {
         },
       },
       [
+        fieldSet('Date', date,
+          e => dispatch(dateInputMsg(e.target.value))
+        ),
         fieldSet('Expense', description,
           e => dispatch(expenseInputMsg(e.target.value))
         ),
@@ -77,11 +82,12 @@ function formView(dispatch, model) {
 
 
 function cell(tag, className, value) {
-  return tag({ className }, value);
+  return tag({className}, value);
 }
 
 const tableHeader = thead([
   tr([
+    cell(th, 'pa2 tl', 'Date'),
     cell(th, 'pa2 tl', 'Expense'),
     cell(th, 'pa2 tr', 'Price'),
     cell(th, '', ''),
@@ -89,7 +95,8 @@ const tableHeader = thead([
 ]);
 
 function expenseRow(dispatch, className, expense) {
-  return tr({ className }, [
+  return tr({className}, [
+    cell(td, 'pa2', expense.date),
     cell(td, 'pa2', expense.description),
     cell(td, 'pa2 tr', expense.price),
     cell(td, 'pa2 tr', [
@@ -110,36 +117,34 @@ function totalRow(expenses) {
     R.map(expense => expense.price),
     R.sum,
   )(expenses);
-  return tr({ className: 'bt b' }, [
+  return tr({className: 'bt b'}, [
     cell(td, 'pa2 tl', 'Total:'),
+    cell(td, '', ''),
     cell(td, 'pa2 tr', total),
     cell(td, '', ''),
   ]);
-};
+}
 
 function expensesBody(dispatch, className, expenses) {
   const rows = R.map(
     R.partial(expenseRow, [dispatch, 'stripe-dark']), expenses);
   const rowsWithTotal = [...rows, totalRow(expenses)];
-  return tbody({ className }, rowsWithTotal);
+  return tbody({className}, rowsWithTotal);
 }
 
 function tableView(dispatch, expenses) {
   if (expenses.length === 0) {
-    return div({ className: 'mv2 i black-50' }, 'No expenses to display...');
+    return div({className: 'mv2 i black-50'}, 'No expenses to display...');
   }
-  return table({ className: 'mv2 w-100 collapse' }, [
+  return table({className: 'mv2 w-100 collapse'}, [
     tableHeader,
     expensesBody(dispatch, '', expenses),
   ]);
 }
 
-//i think I shoul add here function chartView
-
-
 function view(dispatch, model) {
-  return div({ className: 'mw6 center' }, [
-    h1({ className: 'f2 pv2 bb' }, 'Simple Family Budget'),
+  return div({className: 'mw6 center'}, [
+    h1({className: 'f2 pv2 bb'}, 'Simple Family Budget'),
     formView(dispatch, model),
     tableView(dispatch, model.expenses),
   ]);

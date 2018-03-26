@@ -1,4 +1,5 @@
 const initModel = {
+  date: '26-03-2018',
   description: 'Food',
   price: 250,
   showForm: false,
