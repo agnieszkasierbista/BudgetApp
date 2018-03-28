@@ -2,8 +2,8 @@ import initModel from './Model';
 import update from './Update';
 import view from './View';
 import app from './App';
-import chart from "./Chart";
 
 const node = document.getElementById('app');
+const chartNode = document.getElementById('chart');
 
-app(initModel, update, view, chart, node);
+app(initModel, update, view, node, chartNode);

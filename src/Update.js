@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 
-const MSGS = {
+export const MSGS = {
   SHOW_FORM: 'SHOW_FORM',
   DATE_INPUT: 'DATE_INPUT',
   EXPENSE_INPUT: 'EXPENSE_INPUT',

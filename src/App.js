@@ -1,23 +1,32 @@
-import {h, diff, patch} from 'virtual-dom';
+import {diff, patch} from 'virtual-dom';
 import createElement from 'virtual-dom/create-element';
+import generateChart from './Chart';
+import * as Update from './Update';
 
+const {SAVE_EXPENSE, DELETE_EXPENSE, EDIT_EXPENSE, SHOW_FORM} = Update.MSGS;
 
-function app(initModel, update, view, chart, node) {
+function shouldUpdateChart({type}) {
+  return [SAVE_EXPENSE, DELETE_EXPENSE, EDIT_EXPENSE, SHOW_FORM].find(item => type === item);
+}
+
+function app(initModel, update, view, node, chartNode) {
   let model = initModel;
   let currentView = view(dispatch, model);
   let rootNode = createElement(currentView);
+  const ctx = chartNode.getContext('2d');
   node.appendChild(rootNode);
-
-  // node.appendChild(chart(model.expenses)); nie tedy droga, ale moze jeszcze da sie dos wymiyslic
+  generateChart(model, ctx);
 
   function dispatch(msg) {
     model = update(msg, model);
-    window.model = model;
     const updatedView = view(dispatch, model);
     const patches = diff(currentView, updatedView);
     rootNode = patch(rootNode, patches);
     currentView = updatedView;
-  };
-};
+    if (shouldUpdateChart(msg)) {
+      generateChart(model, ctx);
+    }
+  }
+}
 
 export default app;
